@@ -1,129 +1,75 @@
 UTS I Made Ananta Putra ( 2201020051 ) 
 
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet } from 'react-native';
-import { RadioButton } from 'react-native-paper';
+import React, { useState } from "react";
+import { View, Text, FlatList, TextInput, TouchableOpacity, Image } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 
-const HealthSurvey = () => {
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [selectedSymptom, setSelectedSymptom] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+const CoffeePickerView = ({ navigation }) => {
+    const [selectedCoffee, setSelectedCoffee] = useState("Espresso");
+    const coffeeOptions = ["Espresso", "Latte", "Cappuccino", "Americano", "Mocha"];
+    const [searchText, setSearchText] = useState("");
+    const [cart, setCart] = useState([]);
 
-  const handleSubmit = () => {
-    if (!name || !age || !selectedSymptom) {
-      alert('Harap isi semua bidang');
-      return;
-    }
-    setSubmitted(true);
-  };
+    const addToCart = (coffee) => {
+        setCart([...cart, coffee]);
+    };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Survei Kesehatan</Text>
+    return (
+        <View style={{ flex: 1, padding: 20, backgroundColor: "#f5f5f5" }}>
+            <TouchableOpacity 
+                style={{ backgroundColor: "#D2691E", padding: 15, borderRadius: 10, alignItems: "center", marginBottom: 20 }}
+                onPress={() => navigation.navigate('HomeScreen')}
+            >
+                <Text style={{ color: "white", fontSize: 18 }}>Get Started</Text>
+            </TouchableOpacity>
 
-      <Text style={styles.label}>Nama:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Masukkan nama"
-        value={name}
-        onChangeText={setName}
-      />
+            <View style={{ backgroundColor: "#333", padding: 15, borderRadius: 10 }}>
+                <Text style={{ color: "white", fontSize: 14 }}>Location</Text>
+                <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>Bilzen, Tanjungbalai</Text>
+            </View>
+            
+            <TextInput 
+                style={{ backgroundColor: "white", padding: 10, marginVertical: 10, borderRadius: 10 }}
+                placeholder="Search coffee"
+                value={searchText}
+                onChangeText={setSearchText}
+            />
+            
+            <Picker
+                selectedValue={selectedCoffee}
+                onValueChange={(itemValue) => setSelectedCoffee(itemValue)}
+                style={{ height: 50, width: "100%", backgroundColor: "white", borderRadius: 10 }}
+            >
+                {coffeeOptions.map((coffee) => (
+                    <Picker.Item key={coffee} label={coffee} value={coffee} />
+                ))}
+            </Picker>
 
-      <Text style={styles.label}>Usia:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Masukkan usia"
-        keyboardType="numeric"
-        value={age}
-        onChangeText={setAge}
-      />
+            <View style={{ marginVertical: 20, alignItems: "center" }}>
+                <Image source={{ uri: "https://example.com/coffee-image.jpg" }} style={{ width: 200, height: 200, borderRadius: 10 }} />
+                <Text style={{ fontSize: 24, fontWeight: "bold", marginVertical: 10 }}>{selectedCoffee}</Text>
+                <Text style={{ fontSize: 16, textAlign: "center", paddingHorizontal: 20 }}>
+                    A delicious cup of {selectedCoffee} just for you!
+                </Text>
+            </View>
 
-      <Text style={styles.label}>Pilih Gejala yang dialami:</Text>
-      <RadioButton.Group
-        onValueChange={value => setSelectedSymptom(value)}
-        value={selectedSymptom}
-      >
-        <View style={styles.radioRow}>
-          <RadioButton value="Demam" />
-          <Text>Demam</Text>
+            <TouchableOpacity 
+                style={{ backgroundColor: "brown", padding: 15, borderRadius: 10, alignItems: "center" }}
+                onPress={() => addToCart(selectedCoffee)}
+            >
+                <Text style={{ color: "white", fontSize: 18 }}>Buy Now</Text>
+            </TouchableOpacity>
+
+            <Text style={{ fontSize: 20, fontWeight: "bold", marginVertical: 10 }}>Cart</Text>
+            <FlatList 
+                data={cart}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                    <Text style={{ fontSize: 16, padding: 5 }}>{item}</Text>
+                )}
+            />
         </View>
-        <View style={styles.radioRow}>
-          <RadioButton value="Batuk" />
-          <Text>Batuk</Text>
-        </View>
-        <View style={styles.radioRow}>
-          <RadioButton value="Sesak Nafas" />
-          <Text>Sesak Nafas</Text>
-        </View>
-      </RadioButton.Group>
-
-      <View style={styles.buttonContainer}>
-        <Button title="Kirim" onPress={handleSubmit} color="#4CAF50" />
-      </View>
-
-      {submitted && (
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultTitle}>Hasil Survei</Text>
-          <Text style={styles.resultText}>Nama: {name}</Text>
-          <Text style={styles.resultText}>Usia: {age}</Text>
-          <Text style={styles.resultText}>Gejala: {selectedSymptom}</Text>
-        </View>
-      )}
-    </ScrollView>
-  );
+    );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: '#F9F9F9',
-    flexGrow: 1
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333'
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: '#555'
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 15,
-    backgroundColor: '#fff'
-  },
-  radioRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10
-  },
-  buttonContainer: {
-    marginTop: 20,
-    marginBottom: 20
-  },
-  resultContainer: {
-    padding: 15,
-    backgroundColor: '#E8F5E9',
-    borderRadius: 10
-  },
-  resultTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#2E7D32'
-  },
-  resultText: {
-    fontSize: 16,
-    marginBottom: 5
-  }
-});
-
-export default HealthSurvey;
+export default CoffeePickerView;
